@@ -29,7 +29,7 @@ Read in the data.
 
 ```{r}
 homicide_df = 
-  read.csv("data/homicide-data.csv") %>% 
+  read.csv("homicide_data/homicide-data.csv") %>% 
   mutate(
     city_state = str_c(city, state, sep = "_"),
     resolved = case_when(
@@ -88,4 +88,41 @@ results_df %>%
   geom_errorbar(aes(ymin = conf.low, ymax = conf.high)) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 ```
+
+
+## Problem 2
+
+import and tidy data
+
+```{r}
+path_df = 
+  tibble(
+    path = list.files("lda_data"),
+  ) %>% 
+  mutate(
+    path = str_c("lda_data/", path),
+    output_list = map(path,read.csv)
+    ) %>% 
+  unnest(output_list) %>% 
+  mutate(
+    arm = case_when(
+      str_detect(path,"con") ~ "control",
+      str_detect(path,"exp") ~ "experimental"
+    ),
+    id = str_extract(path, "\\d\\d")
+  ) %>% 
+  select(-path) %>% 
+  relocate(arm, id) %>% 
+  pivot_longer(
+    week_1:week_8,
+    names_to = "week",
+    values_to = "observation"
+  ) %>% 
+  mutate(week = str_remove(week, "week_"))
+
+
+
+```
+
+Make a spaghetti plot showing observations on each subject over time, and comment on differences between groups.
 
