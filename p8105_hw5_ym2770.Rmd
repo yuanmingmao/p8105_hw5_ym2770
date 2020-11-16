@@ -139,3 +139,53 @@ path_df %>%
 The baseline values of observation were about the same across groups. The experimental arm experienced more increase in observation values than control group. The observation values of the control group remained about the same from week 1 to week 8.
 
 ## Problem 3
+
+Generate the simulation dataframe with t-test results for mu = 0
+
+```{r cache = TRUE}
+sim_df = 
+  tibble(
+    mu = 0,
+    sim_data = rerun(5000, rnorm(30, mean = mu, sd = 5))
+  ) %>% 
+  mutate(
+    ttest_output = map(.x = sim_data, ~t.test(.x, mu = 0)),
+    tidy_tests = map(.x = ttest_output, ~broom::tidy(.x))
+  ) %>% 
+  select(-sim_data, -ttest_output) %>% 
+  unnest(tidy_tests) %>% 
+  select(mu, estimate, p.value)
+
+```
+
+
+
+Repeat for mu = 1,2,3,4,5,6
+
+```{r}
+sim_df = 
+  tibble(
+    mu = 
+  )
+```
+
+```{r}
+results_df = 
+  aggregate_df %>% 
+  mutate(
+    prop_tests = map2(.x = hom_unsolved, .y = hom_total, ~prop.test(x = .x, n = .y)),
+    tidy_tests = map(.x = prop_tests, ~broom::tidy(.x))
+  ) 
+
+sim_results = 
+  tibble(
+    sample_size = c(30, 60, 120, 240)
+  ) %>% 
+  mutate(
+    output_lists = map(.x = sample_size, ~ rerun(100, sim_mean_sd(.x))),
+    estimate_df = map(output_lists, bind_rows)
+  ) %>% 
+  select(-output_lists) %>% 
+  unnest(estimate_df)
+```
+
