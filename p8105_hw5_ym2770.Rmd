@@ -92,7 +92,7 @@ results_df %>%
 
 ## Problem 2
 
-import and tidy data
+Import and tidy data
 
 ```{r}
 path_df = 
@@ -109,7 +109,8 @@ path_df =
       str_detect(path,"con") ~ "control",
       str_detect(path,"exp") ~ "experimental"
     ),
-    id = str_extract(path, "\\d\\d")
+    id = str_extract(path, "\\d\\d"),
+    id = as.numeric(id)
   ) %>% 
   select(-path) %>% 
   relocate(arm, id) %>% 
@@ -118,11 +119,23 @@ path_df =
     names_to = "week",
     values_to = "observation"
   ) %>% 
-  mutate(week = str_remove(week, "week_"))
-
-
-
+  mutate(
+    week = str_remove(week, "week_"),
+    week = as.numeric(week)
+    )
 ```
 
-Make a spaghetti plot showing observations on each subject over time, and comment on differences between groups.
+Spaghetti plot showing observations on each subject over time
 
+```{r}
+path_df %>%
+  mutate(id = str_c(arm, "_", id)) %>% 
+  ggplot(aes(x = week, y = observation, color = arm, group = id)) + 
+  geom_line() +
+  labs(title = "Spaghetti plot showing observations on each subject over time")
+  
+```
+
+The baseline values of observation were about the same across groups. The experimental arm experienced more increase in observation values than control group. The observation values of the control group remained about the same from week 1 to week 8.
+
+## Problem 3
