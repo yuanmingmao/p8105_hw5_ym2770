@@ -181,6 +181,18 @@ sim_df =
   
 ```
 
+plot of null hypothesis rejection proportion against mu
+
+```{r}
+sim_df %>% 
+  group_by(mu) %>% 
+  summarise(reject_proportion = sum(p.value < 0.05) / n()) %>% 
+  ggplot(aes(x = mu, y = reject_proportion)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "null hypothesis rejection proportion for each true mean")
+```
+
 ```{r}
 
 ```
