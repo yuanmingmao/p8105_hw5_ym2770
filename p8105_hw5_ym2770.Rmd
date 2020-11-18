@@ -190,10 +190,29 @@ sim_df %>%
   ggplot(aes(x = mu, y = reject_proportion)) +
   geom_point() +
   geom_line() +
-  labs(title = "null hypothesis rejection proportion for each true mean")
+  labs(title = "Proportion of null hypothesis rejection for each true mean")
 ```
+
+A plot showing the average estimate of mean against the true mean
+```{r}
+sim_df %>% 
+  group_by(mu) %>% 
+  summarise(average_estimate = mean(estimate)) %>% 
+  ggplot(aes(x = mu, y = average_estimate)) +
+  geom_point() +
+  labs(title = "Average mean estimate versus true mean")
+```
+
+A plot showing the average estimate of mean against the true mean only in samples for which the null was rejected.
 
 ```{r}
-
+sim_df %>% 
+  filter(p.value < 0.05) %>% 
+  group_by(mu) %>% 
+  summarise(average_estimate = mean(estimate)) %>% 
+  ggplot(aes(x = mu, y = average_estimate)) +
+  geom_point() +
+  labs(title = "Average mean estimate vs. true mean among samples that null was rejected")
 ```
 
+Is the sample average of μ̂  across tests for which the null is rejected approximately equal to the true value of μ? Why or why not?
