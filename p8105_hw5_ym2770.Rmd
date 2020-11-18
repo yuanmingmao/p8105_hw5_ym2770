@@ -142,7 +142,7 @@ The baseline values of observation were about the same across groups. The experi
 
 Generate the simulation dataframe with t-test results for mu = 0
 
-```{r cache = TRUE}
+```{r}
 sim_df = 
   tibble(
     mu = 0,
@@ -160,7 +160,7 @@ sim_df =
 
 Repeat for mu = 1, 2, 3, 4, 5, 6
 
-```{r cache = TRUE}
+```{r}
 sim_repeat_df =
   tibble(
     mu = 1:6,
