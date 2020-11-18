@@ -158,34 +158,30 @@ sim_df =
 
 ```
 
+Repeat for mu = 1, 2, 3, 4, 5, 6
 
-
-Repeat for mu = 1,2,3,4,5,6
-
-```{r}
-sim_df = 
+```{r cache = TRUE}
+sim_repeat_df =
   tibble(
-    mu = 
-  )
+    mu = 1:6,
+    sim_data = map(.x = mu, ~rerun(5000, rnorm(30, mean = .x, sd = 5)))
+  ) %>% 
+  unnest(cols = sim_data) %>% 
+  mutate(
+    ttest_output = map(.x = sim_data,  ~t.test(.x, mu = 0)),
+    tidy_tests = map(.x = ttest_output, ~broom::tidy(.x))
+  ) %>% 
+  select(-sim_data, -ttest_output) %>% 
+  unnest(tidy_tests) %>% 
+  select(mu, estimate, p.value)
+
+sim_df = 
+  sim_df %>% 
+  bind_rows(sim_repeat_df)
+  
 ```
 
 ```{r}
-results_df = 
-  aggregate_df %>% 
-  mutate(
-    prop_tests = map2(.x = hom_unsolved, .y = hom_total, ~prop.test(x = .x, n = .y)),
-    tidy_tests = map(.x = prop_tests, ~broom::tidy(.x))
-  ) 
 
-sim_results = 
-  tibble(
-    sample_size = c(30, 60, 120, 240)
-  ) %>% 
-  mutate(
-    output_lists = map(.x = sample_size, ~ rerun(100, sim_mean_sd(.x))),
-    estimate_df = map(output_lists, bind_rows)
-  ) %>% 
-  select(-output_lists) %>% 
-  unnest(estimate_df)
 ```
 
