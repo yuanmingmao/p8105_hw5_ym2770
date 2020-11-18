@@ -181,7 +181,7 @@ sim_df =
   
 ```
 
-plot of null hypothesis rejection proportion against mu
+Plot null hypothesis rejection proportion against mu
 
 ```{r}
 sim_df %>% 
@@ -193,26 +193,34 @@ sim_df %>%
   labs(title = "Proportion of null hypothesis rejection for each true mean")
 ```
 
-A plot showing the average estimate of mean against the true mean
+Power increases while effect size increases, generating a sigmoidal curve.
+
+Plot the average estimate of mean against the true mean, overlaying the plot showing the the comparison only in samples for which the null was rejected
 ```{r}
-sim_df %>% 
+df1 = 
+  sim_df %>% 
   group_by(mu) %>% 
-  summarise(average_estimate = mean(estimate)) %>% 
-  ggplot(aes(x = mu, y = average_estimate)) +
-  geom_point() +
-  labs(title = "Average mean estimate versus true mean")
-```
+  summarise(
+    average_estimate = mean(estimate),
+    group = "All samples"
+    ) 
 
-A plot showing the average estimate of mean against the true mean only in samples for which the null was rejected.
-
-```{r}
-sim_df %>% 
+df2 = 
+  sim_df %>% 
   filter(p.value < 0.05) %>% 
   group_by(mu) %>% 
-  summarise(average_estimate = mean(estimate)) %>% 
-  ggplot(aes(x = mu, y = average_estimate)) +
-  geom_point() +
-  labs(title = "Average mean estimate vs. true mean among samples that null was rejected")
+  summarise(
+    average_estimate = mean(estimate),
+    group = "Samples that null were rejected"
+    )
+
+df1 %>% 
+  rbind(df2) %>% 
+  ggplot(aes(x = mu, y = average_estimate, color = group)) +
+  geom_point(alpha = .7, size = 2.5) +
+  labs(title = "Average mean estimate vs. true mean")
 ```
 
-Is the sample average of μ̂  across tests for which the null is rejected approximately equal to the true value of μ? Why or why not?
+For those that null is rejected, the average mean estimates are higher than the true means among the samples with true means from 1 to 3, and the closer the true mean to 0, the more the extent of that deviation is. Starting from true value of 4, the estimates are about the same as the true means. 
+
+For those samples for which true values are close to 0, it is more likely to draw a sample with mean estimate close to 0 and thus more likely to retain null hypothesis. Hence, among those samples, samples for which estimate is higher than the true mean, i.e. farther from 0, will be more likely to reject null hypothesis. That is why for true values from 1 to 3, the average mean estimates are higher than the true means.
